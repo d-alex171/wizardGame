@@ -4,16 +4,18 @@ pygame.init()
 
 screen = pygame.display.set_mode((700, 500))
 
-playerImg = pygame.image.load('pixil-frame-0.png')
+playerImgRight = pygame.image.load('New Piskel (2).png')
+playerImgleft = pygame.image.load('New Piskel-2.png.png')
+currentImg = playerImgRight
 
 PlayerX = 250
-PlayerY = 250
+PlayerY = 300
 
 movement_changeX = 0
 movement_changeY = 0
 
 
-def player(x, y):
+def player(playerImg, x, y):
     screen.blit(playerImg, (x, y))
 
 
@@ -30,36 +32,33 @@ while running:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
                 movement_changeX = -0.2
+                currentImg = playerImgleft
             if event.key == pygame.K_RIGHT:
                 movement_changeX = 0.2
-
+                currentImg = playerImgRight
             if event.key == pygame.K_UP:
                 movement_changeY = -0.2
-            if event.key == pygame.K_DOWN:
-                movement_changeY = 0.2
+
         # finish of the movement
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 movement_changeX = 0
-            if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
-                movement_changeY = 0
+            if event.key == pygame.K_UP:
+                movement_changeY = 0.15
 
-        # game boundaries
-        if PlayerX > 650:
-            PlayerX = 650
-            movement_changeX = 0
-        elif PlayerX < 50:
-            PlayerX = 50
-            movement_changeX = 0
-        if PlayerY > 450:
-            PlayerY = 450
-            movement_changeY = 0
-        elif PlayerY < 50:
-            PlayerY = 50
-            movement_changeY = 0
+    # game boundaries
+    if PlayerX > 600:
+        PlayerX = 600
+        movement_changeX = 0
+    elif PlayerX < 0:
+        PlayerX = 0
+        movement_changeX = 0
+    if PlayerY > 300:
+        PlayerY = 300
+        movement_changeY = 0
 
     PlayerX += movement_changeX
     PlayerY += movement_changeY
 
-    player(PlayerX, PlayerY)
+    player(currentImg, PlayerX, PlayerY)
     pygame.display.update()
