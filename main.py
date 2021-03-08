@@ -4,31 +4,21 @@ Entry for FOBISIA coding competition
 """
 
 import pygame
+from levels import set_level, rectFloor, rectFloor1, rectFloor2, rectPlatform
 
 pygame.init()
 
-clock=pygame.time.Clock()
 screen = pygame.display.set_mode((1050, 600))
 
+# creating a player model
 playerImgRight = pygame.image.load('New Piskel (2).png')
 playerImgLeft = pygame.image.load('New Piskel-2.png.png')
 currentImg = playerImgRight
-
-floorImg = pygame.image.load('floor1.png')
-rectFloor = floorImg.get_rect()
-rectFloor.center = (200, 577)
-rectFloor1 = floorImg.get_rect()
-rectFloor1.center = (617, 577)
-rectFloor2 = floorImg.get_rect()
-rectFloor2.center = (1034, 577)
-
-wallImg = pygame.image.load('Wall Sprite 1 (1).png')
-
 rectPlayer = playerImgRight.get_rect()
-rectPlayer.center = (200, 400)
+rectPlayer.center = (200, 475)
 
 movement_changeX = 0
-movement_changeY = 0
+movement_changeY = 2
 
 # main game loop
 running = True
@@ -43,52 +33,64 @@ while running:
         # start of the movement
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                movement_changeX = -0.5
+                movement_changeX = -3
                 currentImg = playerImgLeft
+
             if event.key == pygame.K_RIGHT:
-                movement_changeX = 1
+                movement_changeX = 3
                 currentImg = playerImgRight
+
             if event.key == pygame.K_UP:
-                movement_changeY = -1
+                movement_changeY = -3
 
         # finish of the movement
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT or event.key == pygame.K_RIGHT:
                 movement_changeX = 0
+
             if event.key == pygame.K_UP:
-                movement_changeY += 2
+                movement_changeY = 2
 
     # game boundaries
     if rectPlayer.right > 1050:
         rectPlayer.right = 1050
         movement_changeX = 0
+
     elif rectPlayer.left < 0:
         rectPlayer.left = 0
         movement_changeX = 0
+
     if rectPlayer.bottom > 600:
         rectPlayer.bottom = 600
         movement_changeY = 0
 
+    if rectPlayer.top < 2:
+        rectPlayer.top = 2
+        movement_changeY = 0
+
+    # collision detection
     if rectPlayer.collidelistall([rectFloor, rectFloor1, rectFloor2]):
         movement_changeY = 0
         rectPlayer.bottom -= 1
+    if rectPlayer.colliderect(rectPlatform):
+        if rectPlayer.bottom >= rectPlatform.top:
+            movement_changeY = 0
+            rectPlayer.centery -= 2
+        if rectPlayer.top <= rectPlatform.bottom:
+            movement_changeY = 2
+            rectPlayer.centery += 2
+        if rectPlatform.right >= rectPlayer.left >= rectPlatform.centerx:
+            movement_changeX = 0
+            rectPlayer.centerx += 2
+        if rectPlatform.left <= rectPlayer.right <= rectPlatform.centerx:
+            movement_changeX = 0
+            rectPlayer.centerx -= 2
 
     rectPlayer.centerx += movement_changeX
     rectPlayer.centery += movement_changeY
 
-    screen.blit(wallImg, (-361, 338))
-    screen.blit(wallImg, (50, 338))
-    screen.blit(wallImg, (461, 338))
-    screen.blit(wallImg, (872, 338))
+    set_level()
 
-    screen.blit(wallImg, (-381, 158))
-    screen.blit(wallImg, (30, 158))
-    screen.blit(wallImg, (441, 158))
-    screen.blit(wallImg, (852, 158))
-
-    screen.blit(floorImg, rectFloor)
-    screen.blit(floorImg, rectFloor1)
-    screen.blit(floorImg, rectFloor2)
-
+    # updating and project player position
     screen.blit(currentImg, rectPlayer)
     pygame.display.update()
